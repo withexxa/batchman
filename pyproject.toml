@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "batchman"
+version = "1.0.0"
+description = "A flexible Python library for managing batches of requests to LLM inference providers."
+readme = "README.md"
+authors = [
+  {name = "Etienne", email = "etienne@withexxa.com"}
+]
+maintainers = [
+  {name = "Etienne", email = "etienne@withexxa.com"},
+  {name = "Corentin", email = "corentin@withexxa.com"}
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+]
+license = {file = "LICENSE"}
+
+requires-python = ">=3.9"
+dependencies = [
+  "click",
+  "requests",
+  "pydantic",
+  "PrettyTable",
+]
+
+[project.optional-dependencies]
+all = [
+  "openai",
+  "anthropic",
+]
+dev = [
+  "coverage",  # testing
+  "mypy",  # linting
+  "pytest",  # testing
+  "ruff",  # linting
+  "types-requests",
+  "tox",
+  "tox-uv",
+  "sphinx",  # documentation
+  "sphinx-rtd-theme",  # Read The Docs theme
+  "sphinx-autodoc-typehints",  # Better type hints support
+]
+
+[project.urls]
+bugs = "https://github.com/withexxa/batchman/issues"
+changelog = "https://github.com/withexxa/batchman/blob/master/changelog.md"
+homepage = "https://github.com/withexxa/batchman"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+"*" = ["*.*"]
+batchman = ["py.typed"]
+
+[project.scripts]
+batchman = "batchman.cli:cli"
+
+# Mypy
+# ----
+
+[tool.mypy]
+files = ["src", "examples"]
+plugins = ["pydantic.mypy"]
+
+# Use strict defaults
+strict = true
+warn_unreachable = true
+warn_no_return = true
+
+[tool.mypy.overrides]
+files = ["tests/test_*.py"]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple/"
+publish-url = "https://upload.pypi.org/legacy/"
+explicit = true
