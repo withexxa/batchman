@@ -102,26 +102,19 @@ batch.upload()
 
 ### Managing Batches
 
-#### Sync batches
-Use the `batchman sync` command to sync all batches. This will fetch the status of all non-completed batches and download the results when the batch is completed.
+The `batchman` command sync all batches. This will fetch the status of all non-completed batches, and then display
+them in an interactive way
 
 ```bash
-# Sync all batches
-batchman sync
+batchman
 
-# Sync batches in a specific directory
-batchman --dir path/to/batches sync
+# You can also specify a different batches directory
+batchman --dir path/to/batches
 ```
 
-#### List batches
+It will display a table with the batches, and you can remove or cancel them.
 
-```bash
-# List all batches
-batchman list
-
-# List batches in a specific directory
-batchman --dir path/to/batches list
-```
+![batchman_terminal](./interactive_term.png)
 
 ### Advanced Usage
 
@@ -143,8 +136,8 @@ batch = batchman.create_batch(
 ### Security
 
 Once a provider is configured (at batch creation time or later), the provider configuration **including the api_key** is
-stored in the `providers_config.jsonl` file. This file should not be shared with others. The batches directories
-only store hash references to this file, and are safe to share.
+stored in the `providers_config.jsonl` file, in a `.batchman` directory in your home directory. This file should not be shared
+with others. The `batches` directory only store hash references to this file, and are safe to share.
 
 ## Contributing
 

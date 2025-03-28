@@ -11,28 +11,12 @@ from .utils.ui import TableApp
 from .utils.logging import logger
 
 
-def common_params(func):
-    @click.option("--dir", type=click.Path(exists=False), default=Path.home() / ".batchman" / "batches",
-                 help="The directory to list the batches from. You shouldn't need to change this.")
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-    return wrapper
-
-@click.group()
-@click.option("--dir", type=click.Path(exists=False), default=None, 
+@click.command()
+@click.option("--dir", type=click.Path(exists=False), default=Path.home() / ".batchman" / "batches",
                  help="The directory to list the batches from. You shouldn't need to change this.")
 def cli(dir: Optional[str]) -> None:
-    context = click.get_current_context()
-    context.obj = {"batches_dir": dir}
     """Manage batches of requests."""
 
-@cli.command()
-@common_params
-@click.pass_context
-def list(ctx: click.Context, dir: str) -> None:
-    """List all batches."""
-    dir = ctx.obj["batches_dir"] or dir
     batcher = Batcher(batches_dir=Path(dir))
 
     errors = []
@@ -85,43 +69,6 @@ def list(ctx: click.Context, dir: str) -> None:
 
     app = TableApp(table, batcher, changed_batches, errors)
     app.run()
-
-    # click.echo(table)
-
-    # if errors:
-    #     click.echo("Errors:")
-    #     for error in errors:
-    #         click.echo(f"  • {error}")
-
-
-@cli.command()
-@common_params
-@click.pass_context
-def sync(ctx: click.Context, dir: str) -> None:
-    """Synchronize all batches."""
-    dir = ctx.obj["batches_dir"] or dir
-    batcher = Batcher(batches_dir=Path(dir))
-    batcher.sync_batches()
-    click.echo("Synchronization completed")
-
-@cli.command()
-@click.argument("batch_id",type=str, required=True)
-@common_params
-@click.pass_context
-def cancel(ctx: click.Context, dir: str, batch_id: str) -> None:
-    """Cancel a batch given its unique ID."""
-    dir = ctx.obj["batches_dir"] or dir
-    batcher = Batcher(batches_dir=Path(dir))
-    batch = batcher.load_batch(unique_id=batch_id)
-    if isinstance(batch, UploadedBatch):
-        batch.cancel()
-        click.echo(f"Batch {batch.params.name} canceled")
-    elif isinstance(batch, EditableBatch):
-        click.echo("Batch is editable, can't cancel it before upload!")
-    elif isinstance(batch, DownloadedBatch):
-        click.echo("Batch is downloaded, can't cancel anymore")
-    else:
-        click.echo("Batch is not in an uploadable state")
 
 
 if __name__ == "__main__":

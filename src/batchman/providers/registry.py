@@ -1,13 +1,13 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
+import importlib
 
 from .config_store import ConfigStore
 from ..utils.logging import logger
-import importlib
 
 if TYPE_CHECKING:
-    from ..models.provider_config import ProviderConfig
     from .base import Provider
+    from ..models.provider_config import ProviderConfig
 
 
 class ProviderRegistry:
@@ -64,11 +64,11 @@ class ProviderRegistry:
         return provider_name in cls._providers
 
     @classmethod
-    def get_stored_config(cls, config_hash: str) -> Optional[ProviderConfig]:
+    def get_stored_config(cls, config_hash: str) -> Optional["ProviderConfig"]:
         return cls._config_store.get(config_hash)
 
     @classmethod
-    def store_config(cls, config: ProviderConfig) -> str:
+    def store_config(cls, config: "ProviderConfig") -> str:
         return cls._config_store.store(config)
 
     @classmethod

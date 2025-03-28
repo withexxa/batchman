@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "batchman"
-version = "1.0.0"
+version = "1.1.0"
 description = "A flexible Python library for managing batches of requests to LLM inference providers."
 readme = "README.md"
 authors = [
@@ -31,6 +31,7 @@ dependencies = [
   "requests",
   "pydantic",
   "PrettyTable",
+  "textual",
 ]
 
 [project.optional-dependencies]

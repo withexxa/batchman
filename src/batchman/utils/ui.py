@@ -191,7 +191,7 @@ Button {
                     except Exception as e:
                         self.push_screen(PopupScreen(f"Failed to cancel batch {self._req_fmt(batch_id)}: {e}"))
             else:
-                self.push_screen(PopupScreen(f"Batch {self._req_fmt(batch_id)} is not in an cancelable state"))
+                self.push_screen(PopupScreen(f"Batch {self._req_fmt(batch_id)} is not in a cancelable state"))
 
     def action_cancel(self):
         table = self.data_table
