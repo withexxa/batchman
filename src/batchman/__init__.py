@@ -1,11 +1,11 @@
+from typing import Optional, Union, List, Tuple
+from pathlib import Path
 from .batchman import Batcher
-from .cli import cli
 from .models import Request, UserMessage, ProviderConfig, LocalBatchStatus
 from .batch_interfaces import EditableBatch, UploadedBatch, DownloadedBatch
-from typing import Optional, Union, List, Tuple
 
 
-_default_batcher = Batcher()
+_default_batcher = Batcher(batches_dir=Path.home() / ".batchman" / "batches")
 
 
 def create_batch(name: str, unique_id: Optional[str] = None, provider: Optional[str] = None, provider_config: Optional[ProviderConfig] = None) -> "EditableBatch":
@@ -63,5 +63,17 @@ def sync_batches() -> None:
         List of errors with the batch directory and the corresponding exception
     """
     return _default_batcher.sync_batches()
+
+def delete_batch(unique_id: str) -> None:
+    """Delete a batch given its unique ID.
+
+    Args:
+        unique_id: The unique ID of the batch to delete
+
+    Raises:
+        FileNotFoundError: If the batch does not exist
+        RuntimeError: If multiple batches are found with the same unique_id
+    """
+    return _default_batcher.delete_batch(unique_id)
 
 __all__ = ["Batcher", "Request", "UserMessage", "cli", "EditableBatch", "UploadedBatch", "DownloadedBatch", "ProviderConfig", "LocalBatchStatus"]

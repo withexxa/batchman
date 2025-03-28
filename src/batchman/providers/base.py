@@ -1,8 +1,9 @@
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from batchman.models import LocalBatchStatus, ProviderConfig, Request, Result
-from batchman.models.batch import Batch
+if TYPE_CHECKING:
+    from batchman.models.batch import Batch
 
 
 class Provider:

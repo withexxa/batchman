@@ -7,7 +7,7 @@ batch = batchman.create_batch(
     provider="exxa",
     provider_config=ProviderConfig(
         api_key=os.getenv("EXXA_API_KEY"),
-        base_url=os.getenv("EXXA_BASE_URL"),
+        url=os.getenv("EXXA_API_URL"),
     ),
 )
 
