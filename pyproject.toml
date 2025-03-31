@@ -32,13 +32,11 @@ dependencies = [
   "pydantic",
   "PrettyTable",
   "textual",
-]
-
-[project.optional-dependencies]
-all = [
   "openai",
   "anthropic",
 ]
+
+[project.optional-dependencies]
 dev = [
   "coverage",  # testing
   "mypy",  # linting
