@@ -58,7 +58,7 @@ jobs:
 
   deploy:
     needs: test  # This ensures deploy only runs if test job succeeds
-    # if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,30 +69,34 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv
+          source .venv/bin/activate
           uv pip install packaging requests
-      # - name: Install dependencies and build with uv
-      #   run: |
-      #     uv pip install -e .
-      #     # Add any deployment-specific dependencies
       - name: Check version
         id: check_version
         run: |
-          
-          # Get local version from your package
-          LOCAL_VERSION=$(python -c "import pkg_resources; print(pkg_resources.get_distribution('batchman').version)")
-          echo "Local version: $LOCAL_VERSION"
-          
+          # Get version from pyproject.toml
+          TOML_VERSION=$(python -c "import tomli; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          echo "Version in pyproject.toml: $TOML_VERSION"
+          LOCAL_VERSION=$TOML_VERSION
           # Get PyPI version
           PYPI_VERSION=$(python -c "import requests, json; print(json.loads(requests.get(f'https://pypi.org/pypi/batchman/json').text)['info']['version'])")
           echo "PyPI version: $PYPI_VERSION"
-          
           # Compare versions
           python -c "from packaging import version; exit(0) if version.parse('$LOCAL_VERSION') > version.parse('$PYPI_VERSION') else exit(1)"
-          echo "::set-output name=should_deploy::true"
-        continue-on-error: true
-      - name: Build and deploy
+          if [ $? -eq 0 ]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Build package
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
           uv build
           echo "Deploying to production"
-
+      - name: Upload package to PyPI
+        if: steps.check_version.outputs.should_deploy == 'true'
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          uv publish --index pypi --username __token__ --password "$PYPI_TOKEN"
+          echo "Uploaded to PyPI"
