@@ -22,10 +22,7 @@ class OpenAIProvider(Provider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.client = OpenAI(api_key=self._api_key, base_url=self._base_url)
-        start = time.time()
-        self.__models = [model.id for model in self.client.models.list()]
-        end = time.time()
-        logger.debug(f"[OpenAI] Models loaded in {end - start} seconds")
+        self.__models = None
 
     def _prepare_request(self, request: Request) -> Dict[str, Any]:
         metadata = {
@@ -71,6 +68,12 @@ class OpenAIProvider(Provider):
         return {**metadata, "body": request_body}
 
     def validate_request(self, local_request: Request) -> None:
+        if not self.__models:
+            start = time.time()
+            self.__models = [model.id for model in self.client.models.list()]
+            end = time.time()
+            logger.debug(f"[OpenAI] Models loaded in {end - start} seconds")
+
         if not local_request.model:
             raise ValueError("Model is required")
         if local_request.model not in self.__models:

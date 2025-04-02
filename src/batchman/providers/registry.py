@@ -1,20 +1,20 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
+import importlib
 
 from .config_store import ConfigStore
 from ..utils.logging import logger
-import importlib
-from batchman.models.provider_config import ProviderConfig
 
 if TYPE_CHECKING:
     from .base import Provider
+    from ..models.provider_config import ProviderConfig
 
 
 class ProviderRegistry:
     _providers: Dict[str, Type["Provider"]] = {}
 
-    # Config store in the current directory
-    _config_store = ConfigStore(Path.cwd() / "providers_configs.jsonl")
+    # Config store in the .batchman directory
+    _config_store = ConfigStore(Path.home() / ".batchman" / "providers_configs.jsonl")
 
     @classmethod
     def register(cls, provider_cls: Type["Provider"]) -> None:
@@ -64,11 +64,11 @@ class ProviderRegistry:
         return provider_name in cls._providers
 
     @classmethod
-    def get_stored_config(cls, config_hash: str) -> Optional[ProviderConfig]:
+    def get_stored_config(cls, config_hash: str) -> Optional["ProviderConfig"]:
         return cls._config_store.get(config_hash)
 
     @classmethod
-    def store_config(cls, config: ProviderConfig) -> str:
+    def store_config(cls, config: "ProviderConfig") -> str:
         return cls._config_store.store(config)
 
     @classmethod

@@ -1,60 +1,29 @@
-# Batchman - Batch LLM requests
+<h1 align="center">Batchman</h1>
 
-A flexible Python library for managing batches of requests to LLM inference providers.
+<p align="center">A flexible Python library for managing batches of requests to LLM inference providers.</p>
+
+<h4 align="center">
+    <a href="https://pypi.org/project/batchman/" target="_blank">
+        <img src="https://img.shields.io/pypi/v/batchman.svg" alt="PyPI Version">
+    </a>
+    <a href="https://discord.gg/BTtUV6Ee">
+        <img src="https://img.shields.io/static/v1?label=Chat%20on&message=Discord&color=blue&logo=Discord&style=flat-square" alt="Discord">
+    </a>
+</h4>
 
 ## Features
 
-- Use batch providers through a unified API
+- Use batch providers through a unified API [supported providers: **`OpenAI`**, **`Anthropic`**, **`Exxa`**]
 - Validate requests before uploading
 - Keep track of uploaded batches and their status
-- [TODO] Visualize batch requests and results
-- [TODO] Support streaming results for dev mode
+
 
 ## Installation
 
 ### From PyPI
 
 ```bash
-pip install batchman[all]
-```
-
-If you don't want to install all the providers, you can install only the ones you need, and install
-the minimum dependencies with
-
-```bash
 pip install batchman
-```
-
-### For Development
-
-```bash
-git clone https://github.com/yourusername/batchman.git
-cd batchman
-uv pip install -e .[dev,all]
-```
-
-to build the pypi package, run
-
-```bash
-uv build
-```
-
-to publish to testpypi, run
-
-```bash
-uv publish --index testpypi --username __token__ --password $PYPITEST_TOKEN
-```
-
-Downloading from the test index:
-
-```bash
-pip install --verbose -i https://test.pypi.org/simple/  --extra-index-url https://pypi.org/simple/ batchman[all]
-```
-
-### Building the documentation
-
-```bash
-tox -e docs
 ```
 
 ## Quickstart
@@ -76,18 +45,15 @@ jobs = [
 
 # Add requests to the batch
 batch.add_requests([
-    Request([
-        UserMessage(f"Write a short story about a child dreaming of being {job}.")
-    ])
-    for job in jobs
-])
+    Request([UserMessage(f"Write a short story about a child dreaming of being {job}.")])
+    for job in jobs]
+)
 
 # Configure batch parameters
 batch.override_request_params(
     system_prompt=(
         "You are a creative writer who writes short stories for children. "
         "The goal of the stories are to motivate them to pursue their dreams "
-        "and to make them believe that they can achieve anything they want."
     ),
     model="llama-3.1-70b-instruct-fp16",
     temperature=0.5,
@@ -102,26 +68,16 @@ batch.upload()
 
 ### Managing Batches
 
-#### Sync batches
-Use the `batchman sync` command to sync all batches. This will fetch the status of all non-completed batches and download the results when the batch is completed.
+The `batchman` command sync all batches. This will fetch the status of all non-completed batches, and then display
+them in an interactive way
 
 ```bash
-# Sync all batches
-batchman sync
-
-# Sync batches in a specific directory
-batchman --dir path/to/batches sync
+batchman
 ```
 
-#### List batches
+It will display a table with the batches, and you can remove or cancel them.
 
-```bash
-# List all batches
-batchman list
-
-# List batches in a specific directory
-batchman --dir path/to/batches list
-```
+![batchman_terminal](./interactive_term.png)
 
 ### Advanced Usage
 
@@ -143,8 +99,40 @@ batch = batchman.create_batch(
 ### Security
 
 Once a provider is configured (at batch creation time or later), the provider configuration **including the api_key** is
-stored in the `providers_config.jsonl` file. This file should not be shared with others. The batches directories
-only store hash references to this file, and are safe to share.
+stored in the `providers_config.jsonl` file, in a `.batchman` directory in your home directory. This file should not be shared
+with others. The `batches` directory only store hash references to this file, and are safe to share.
+
+## For Development
+
+```bash
+git clone https://github.com/yourusername/batchman.git
+cd batchman
+uv pip install -e .[dev]
+```
+
+to build the pypi package with uv, run
+
+```bash
+uv build
+```
+
+to publish to testpypi, run
+
+```bash
+uv publish --index testpypi --username __token__ --password $PYPITEST_TOKEN
+```
+
+Downloading from the test index:
+
+```bash
+pip install --verbose -i https://test.pypi.org/simple/  --extra-index-url https://pypi.org/simple/ batchman
+```
+
+### Building the documentation
+
+```bash
+tox -e docs
+```
 
 ## Contributing
 

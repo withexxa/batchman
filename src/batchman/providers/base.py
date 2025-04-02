@@ -1,8 +1,9 @@
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from batchman.models import LocalBatchStatus, ProviderConfig, Request, Result
-from batchman.models.batch import Batch
+if TYPE_CHECKING:
+    from batchman.models.batch import Batch
 
 
 class Provider:
@@ -53,7 +54,7 @@ class Provider:
         """
         raise NotImplementedError
 
-    def upload_batch(self, local_batch: Batch) -> str:
+    def upload_batch(self, local_batch: "Batch") -> str:
         """Upload a batch to the provider.
 
         This method should upload the batch to the provider and update the local batch state
@@ -75,10 +76,10 @@ class Provider:
         """
         raise NotImplementedError
 
-    def cancel_batch(self, local_batch: Batch) -> None:
+    def cancel_batch(self, local_batch: "Batch") -> None:
         raise NotImplementedError
 
-    def sync_batch(self, local_batch: Batch) -> None:
+    def sync_batch(self, local_batch: "Batch") -> None:
         """
         Sync the local batch state with the provider's state.
 
@@ -88,7 +89,7 @@ class Provider:
         """
         raise NotImplementedError
 
-    def download_batch_results(self, local_batch: Batch) -> None:
+    def download_batch_results(self, local_batch: "Batch") -> None:
         raise NotImplementedError
 
     def convert_batch_status(self, provider_state: Dict[str, Any]) -> LocalBatchStatus:

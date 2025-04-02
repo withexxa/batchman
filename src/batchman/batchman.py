@@ -184,6 +184,32 @@ class Batcher:
 
         return errors
 
+    def delete_batch(self, unique_id: str) -> None:
+        """Delete a batch given its unique ID.
+
+    Args:
+        unique_id: The unique ID of the batch to delete
+
+    Raises:
+        FileNotFoundError: If the batch does not exist
+        RuntimeError: If multiple batches are found with the same unique_id
+    """
+        if unique_id is None:
+            raise ValueError("unique_id must be provided")
+
+        # Search for batch with matching unique_id
+        matching_dirs = list(self.batches_dir.glob(f"batch-*-{unique_id}"))
+        if not matching_dirs:
+            raise FileNotFoundError(f"No batch found with ID '{unique_id}'")
+        if len(matching_dirs) > 1:
+            raise RuntimeError(f"Multiple batches found with ID '{unique_id}'")
+        batch_dir = matching_dirs[0]
+        logger.debug(f"Found batch {batch_dir} with ID '{unique_id}'")
+
+        if not batch_dir.exists():
+            raise FileNotFoundError(f"Batch with ID '{unique_id}' does not exist")
+        shutil.rmtree(batch_dir)
+
     def _rm_batch_dir(self, im_sure_to_delete_all_batches: bool = False) -> None:
         """Remove the batches directory and all its contents.
 

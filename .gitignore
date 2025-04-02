@@ -182,3 +182,6 @@ batches_persistent_test_copy/
 
 # Provider configs
 providers_configs.jsonl
+
+# ci secrets
+.ci.secrets

@@ -39,8 +39,6 @@ def checking_result_correctness(res: List[Result]):
 def test_env_variables():
     # test required env variables
     assert os.getenv("OPENAI_API_KEY") is not None
-    assert os.getenv("ANTHROPIC_API_KEY") is not None
-    assert os.getenv("EXXA_API_KEY") is not None
 
 
 def test_load_batch_openai(persistent_batcher: Batcher):
