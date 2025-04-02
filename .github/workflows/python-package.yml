@@ -71,9 +71,10 @@ jobs:
           python-version: "3.9"
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip uv
           uv venv
           source .venv/bin/activate
-          uv pip install packaging requests
+          uv pip install packaging requests tomli
       - name: Check version
         id: check_version
         run: |
